@@ -19,8 +19,8 @@ jobs:
 
     - name: Setup Git
       run: |
-        git config user.name "FFrein"
-        git config user.email "pesetsky2003g@gmail.com"
+        git config --global user.name "FFrein"
+        git config --global user.email "pesetsky2003g@gmail.com"
 
     - name: Clone repoB
       run: |
