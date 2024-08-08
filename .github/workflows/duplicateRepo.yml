@@ -1,0 +1,29 @@
+name: Sync Repository
+
+on:
+  push:
+    branches:
+      - '*' # Слушаем все ветки
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repoA
+        uses: actions/checkout@v3
+
+      - name: Setup Git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      - name: Add repoB remote
+        run: |
+          git remote add repoB https://github.com/FFrein/repoB.git
+          git fetch repoB
+
+      - name: Push to repoB
+        run: |
+          git push repoB --all
+          git push repoB --tags
