@@ -26,16 +26,26 @@ jobs:
       run: |
         git clone https://x-access-token:${{ secrets.PAT }}@github.com/FFrein/repoB.git
         cd repoB
-    
+
     - name: Remove unwanted folder
       run: |
-        rm -rf repoA/.github/workflows # Удалите папку `workflows` из `repoA`
+        rm -rf ../repoA/.github/workflows # Удалите папку `workflows` из `repoA`
 
     - name: Sync commits to repoB
       run: |
         cd repoB
         git remote add repoA https://x-access-token:${{ secrets.PAT }}@github.com/FFrein/repoA.git
         git fetch repoA
+
+        # Iterate over each commit from repoA and reapply it with a new author
+        git filter-branch --env-filter '
+          if [ "$GIT_COMMIT" != "" ]; then
+            export GIT_AUTHOR_NAME="FFrein"
+            export GIT_AUTHOR_EMAIL="pesetsky2003g@gmail.com"
+            export GIT_COMMITTER_NAME="FFrein"
+            export GIT_COMMITTER_EMAIL="pesetsky2003g@gmail.com"
+          fi' -- --all
+
         git checkout main
         git reset --hard repoA/main
         git push origin main --force
