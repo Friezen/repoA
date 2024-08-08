@@ -1,29 +1,44 @@
-name: Sync Repository
+name: Sync Commits to repoB
 
 on:
   push:
     branches:
-      - '*' # Слушаем все ветки
+      - main # Укажите нужную ветку, если это не main
 
 jobs:
   sync:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repoA
-        uses: actions/checkout@v3
+    - name: Checkout repoA
+      uses: actions/checkout@v3
+      with:
+        repository: FFrein/repoA
+        token: ${{ secrets.PAT }}
+        ref: main # Укажите нужную ветку, если это не main
 
-      - name: Setup Git
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
+    - name: Setup Git
+      run: |
+        git config user.name "FFrein"
+        git config user.email "pesetsky2003g@gmail.com"
 
-      - name: Add repoB remote
-        run: |
-          git remote add repoB https://github.com/FFrein/repoB.git
-          git fetch repoB
+    - name: Clone repoB
+      run: |
+        git clone https://github.com/FFrein/repoB.git
+        cd repoB
 
-      - name: Push to repoB
-        run: |
-          git push repoB --all
-          git push repoB --tags
+    - name: Sync commits to repoB
+      run: |
+        cd repoB
+        git remote add repoA https://github.com/FFrein/repoA.git
+        git fetch repoA
+        git checkout main # Укажите нужную ветку, если это не main
+        git reset --hard repoA/main # Укажите нужную ветку, если это не main
+        git push origin main --force # Укажите нужную ветку, если это не main
+
+    - name: Push changes to repoB
+      run: |
+        cd repoB
+        git add .
+        git commit -m "Sync commits from repoA"
+        git push origin main # Укажите нужную ветку, если это не main
